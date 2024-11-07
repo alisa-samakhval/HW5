@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Alisa Samakhval COMP 272 - 001
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -246,12 +246,45 @@ public class CuckooHash<K, V> {
 
  	public void put(K key, V value) {
 
-		// ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME AT TOP OF FILE.
-		// Also make sure you read this method's prologue above, it should help
-		// you. Especially the two HINTS in the prologue.
 
-		return;
-	}
+			int position1 = hash1(key);
+			int position2 = hash2(key);
+			Bucket<K, V> newBucket = new Bucket<>(key, value);
+			int cycleLimit = CAPACITY;
+
+
+			for (int i = 0; i < cycleLimit; i++) {
+				// try to insert at position1
+				if (table[position1] == null) {
+					table[position1] = newBucket;
+					return;
+				} else if (table[position1].getBucKey().equals(key) && table[position1].getValue().equals(value)) {
+					return; // for duplicate insertion
+				} else {
+
+					Bucket<K, V> displacedBucket = table[position1];
+					table[position1] = newBucket;
+					newBucket = displacedBucket;
+
+
+					position1 = (position1 == hash1(newBucket.getBucKey())) ? hash2(newBucket.getBucKey()) : hash1(newBucket.getBucKey());
+				}
+			}
+
+
+			rehash();
+
+			position1 = hash1(newBucket.getBucKey());
+			position2 = hash2(newBucket.getBucKey());
+
+
+			put(newBucket.getBucKey(), newBucket.getValue());
+		}
+
+
+
+
+
 
 
 	/**
